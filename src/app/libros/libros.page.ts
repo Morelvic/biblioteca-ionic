@@ -9,39 +9,43 @@ import { LibrosService } from '../servicios/libros.service';
   styleUrls: ['./libros.page.scss'],
 })
 export class LibrosPage implements OnInit {
-  @ViewChild(IonRefresher) refresher: IonRefresher;
-
-   public listaLibros: libro[]=[]; 
-   public cargandoLibros: boolean = false;
-
+@ViewChild(IonRefresher) refresher:IonRefresher;
+  
+  public listaLibros: libro[] = [];
+  public cargandoLibros: boolean = false;
+  public modalVisible: boolean= false;
+   libro: any;
   constructor(
     private servicioLibros: LibrosService,
-    private servicioToast: ToastController
+    private servicioToast:ToastController
+
   ) { }
 
   ngOnInit() {
     this.cargarLibros();
   }
-  public cargarLibros(){
+  public cargarLibros() {
     this.refresher?.complete();
-    this.cargandoLibros = true;
+    this.cargandoLibros =true;
     this.servicioLibros.get().subscribe({
-      next: (libros) => {
-        this.listaLibros = libros;
-        this.cargandoLibros = false;
-      } ,
-      error: (e) => {
-        console.error('Error al consultar libros',e);
+      next: (libro) => {
+        this.listaLibros = libro;
         this.cargandoLibros=false;
+      },
+      error: (e) => {
+        console.error("Error al consultar libros", e);
+        this.cargandoLibros =false;
         this.servicioToast.create({
-          header: 'Error al Cargar libros',
-          message: e.message,
+          header:'Error al cargar libros',
+          message:e.message,
           duration:3000,
           position:'bottom',
           color:'danger'
-        }).then(toast => toast.present());
+        }).then(toast=>toast.present());
       }
     });
+    }
+    public nuevo(){
+      this.modalVisible = true;
   }
-
 }
